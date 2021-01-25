@@ -1,10 +1,12 @@
 <?php
+session_start();
+$_SESSION = array();
 $user = 'root';
 $pass = '';
 $pdo = new PDO('mysql:host=localhost;dbname=lojinha', $user, $pass);
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=lojinha', $user, $pass, [PDO::MYSQL_ATTR_INIT_COMMAND =>  "SET NAMES 'UTF8'"]);
+    $pdo = new PDO('mysql:host=localhost;dbname=lojinha', $user, $pass, [PDO::MYSQL_ATTR_INIT_COMMAND =>  "SET NAMES 'UTF8'", PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); //Vai mostrar erros caso exista.
 }catch (Exception $e) { /*Pegue a exception e coloque na variável $e */
     echo 'Erro ao conectar ao banco de dados';
@@ -15,10 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $usuario = $_POST['usuario'];
     $senha = $_POST['senha'];
-
+    $senha = trim($senha);
+    $usuario = trim($usuario);
     $sql = $pdo->prepare("SELECT * FROM user WHERE user_name = ? and password = ?");
-    $sql->execute([$usuario, $senha]);
-
+    $stmt->bindValue(':user_name', $usuario);
+    $stmt->bindValue(':password', $senha);
+    $sql->execute();
+    $_SESSION['query'] = $sql;
     if($sql->rowCount() == 1){
         $info = $sql->fetch();
         $_SESSION['login'] = $info;
@@ -43,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div id="greenCube">
     </div>
     <div id="login">
-        <form action='Mysql.php' method='POST'>
+        <form action='pdoLogin.php' method='POST'>
             <input type='text' name='usuario'>
             <input type='password' name='senha' >
             <input type='submit' name='manda' value='Logar'>

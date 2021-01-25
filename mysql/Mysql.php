@@ -12,8 +12,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $usuario = $_POST['usuario'];
     $senha = $_POST['senha'];
     $query = "select user_name, password from user where user_name = '$usuario' and password = '$senha' ";
+
+    $_SESSION['query'] = $query;
     $result = mysql_query($query);
-    $rows = mysql_fetch_array($result);
+    $rows = mysql_fetch_assoc($result);
     if ($rows) {
         $_SESSION['login'] = $rows;
         header('Location: ../logado.php');

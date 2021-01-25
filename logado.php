@@ -1,6 +1,12 @@
 <?php
 session_start();
 
-var_dump($_SESSION['login']);
+$login = $_SESSION['login'];
+echo $_SESSION['query'];
+echo '<br />';
+foreach ($login as $key ) {
+    echo $key;
+    echo '<br />';
+}
 
 ?>
